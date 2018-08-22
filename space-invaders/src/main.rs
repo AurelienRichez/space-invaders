@@ -29,7 +29,8 @@ const PIXEL_HEIGHT: i32 = 256;
 
 fn run_space_invader() {
 
-    let invader_rom = include_bytes!("../resources/invaders.rom");
+    let invader_rom = include_bytes!(env!("ROM_PATH"));
+
     let machine = Rc::new(RefCell::new(SpaceInvaderMachine::new()));
     let data_bus = SpaceInvaderDataBus::new(machine.clone());
 
