@@ -96,7 +96,7 @@ fn set_up_drawing_area(proc8080: Rc<RefCell<Proc8080<SpaceInvaderDataBus>>>) -> 
     let drawing_area = DrawingArea::new();
     drawing_area.connect_draw(move |canvas, cr| {
         
-        let mut surface =ImageSurface::create(cairo::Format::A1, PIXEL_WIDTH, PIXEL_HEIGHT)
+        let mut surface =ImageSurface::create(cairo::Format::A8, PIXEL_WIDTH, PIXEL_HEIGHT)
             .expect("Could not create image surface");
 
         surface.get_data().as_mut().map(|data| {
@@ -109,17 +109,14 @@ fn set_up_drawing_area(proc8080: Rc<RefCell<Proc8080<SpaceInvaderDataBus>>>) -> 
                 let (x_source, y_source) = memory_buffer_index_to_coordinates(i);
 
                 let x_target = y_source;
-                let offset = x_target % 8;
-                let mask = 1 << offset;
                 
                 for bit in 0..8 {
                     let y_target = PIXEL_HEIGHT - 1 - x_source - bit;
 
-                    let px = ((px_byte & (1 << bit) == 0) as u8) << offset;
-                    let index = (y_target * PIXEL_WIDTH / 8) + x_target / 8;
+                    let px = px_byte & (1 << bit) == 0 ;
+                    let index = (y_target * PIXEL_WIDTH) + x_target;
 
-                    data[index as usize] &= !mask;
-                    data[index as usize] |= px;
+                    data[index as usize] = if px { 0xff } else { 0 } ;
                 }
             }
         }).unwrap();
