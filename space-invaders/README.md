@@ -16,8 +16,8 @@ I assume the [rust toolchain](https://www.rust-lang.org) is installed.
 
 Known issues
 -------
- - For some unknown reason the rendering did not work on osx the last time I tried but I did not 
- investigate further yet (an `out of memory error` occurs in gtk)
+ - The game works on osx, but whenever I increase the size of the windows, it gets really slow, 
+ probably linked to the scaling.
 
 Commands
 -------
