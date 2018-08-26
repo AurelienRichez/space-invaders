@@ -122,6 +122,7 @@ fn set_up_drawing_area(proc8080: Rc<RefCell<Proc8080<SpaceInvaderDataBus>>>) -> 
         }).unwrap();
         let drawing_width = canvas.get_allocated_width();
         let drawing_height = canvas.get_allocated_height();
+        cr.set_antialias(cairo::Antialias::None);
         cr.scale(drawing_width as f64 / PIXEL_WIDTH as f64, drawing_height as f64 / PIXEL_HEIGHT as f64);
         cr.set_source_surface(&surface, 0.0, 0.0);
         cr.paint();
