@@ -7,6 +7,7 @@ use std::rc::Rc;
 use std::time::{ Instant, Duration };
 
 use piston::input::*;
+use piston_window::texture::Filter;
 use opengl_graphics::{ GlGraphics, OpenGL };
 use opengl_graphics::Texture;
 use piston_window::texture::TextureSettings;
@@ -59,11 +60,12 @@ impl App {
         )));
 
         let now = Instant::now();
+        let texture_settings = TextureSettings::new().filter(Filter::Nearest);
         let screen = Texture::from_memory_alpha(
             &[128u8; (PIXEL_WIDTH * PIXEL_HEIGHT) as usize],
             PIXEL_WIDTH, 
             PIXEL_HEIGHT, 
-            &TextureSettings::new()).unwrap();
+            &texture_settings).unwrap();
         App {
             gl: GlGraphics::new(opengl),
             screen,
@@ -80,7 +82,11 @@ impl App {
 
         let screen = &self.screen;
         self.gl.draw(args.viewport(), |c, gl| {
-            image(screen, c.transform, gl);
+            let transform = c.transform.scale(
+                args.draw_width as f64 / PIXEL_WIDTH as f64, 
+                args.draw_height as f64 / PIXEL_HEIGHT as f64
+            );
+            image(screen, transform, gl);
         });
     }
 

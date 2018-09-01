@@ -32,9 +32,11 @@ fn main() {
     // Create an Glutin window.
     let mut window: Window = WindowSettings::new(
             "spinning-square",
-            [PIXEL_WIDTH, PIXEL_HEIGHT]
+            [PIXEL_WIDTH*2, PIXEL_HEIGHT*2]
         )
         .opengl(opengl)
+        .samples(0)
+        .resizable(false)
         .exit_on_esc(true)
         .build()
         .unwrap();
