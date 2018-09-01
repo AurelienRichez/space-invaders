@@ -7,7 +7,6 @@ use std::rc::Rc;
 use std::time::{ Instant, Duration };
 
 use piston::input::*;
-use piston::input::keyboard::Key;
 use opengl_graphics::{ GlGraphics, OpenGL };
 use opengl_graphics::Texture;
 use piston_window::texture::TextureSettings;
@@ -27,14 +26,14 @@ pub struct App {
     last_cpu_run: Instant,
 }
 
-// scancodes, not sure it is os dependant but i did not find a way to access the original enum from
+// scancodes, not sure it is os dependent but i did not find a way to access the original enum from
 // the SDL in there.
 mod scancodes {
     pub const LEFT: i32 = 105;
     pub const DOWN: i32 = 108;
     pub const RIGHT: i32 = 106;
     pub const CTRL_R: i32 = 97;
-    pub const SYMBOLIC_W: i32 = 30;
+    pub const SYMBOLIC_A: i32 = 30;
     pub const SYMBOLIC_S: i32 = 31;
     pub const SYMBOLIC_D: i32 = 32;
     pub const ENTER: i32 = 28;
@@ -113,10 +112,14 @@ impl App {
         let pressed = args.state == ButtonState::Press;
         match args.scancode {
             Some(scancodes::INSERT) => self.machine.borrow_mut().insert_coin(pressed),
-            Some(scancodes::ENTER) => self.machine.borrow_mut().start_button(pressed),
-            Some(scancodes::DOWN) => self.machine.borrow_mut().fire_button(pressed),
-            Some(scancodes::LEFT) => self.machine.borrow_mut().left_button(pressed),
-            Some(scancodes::RIGHT) => self.machine.borrow_mut().right_button(pressed),
+            Some(scancodes::ENTER) => self.machine.borrow_mut().p1_start_button(pressed),
+            Some(scancodes::CTRL_R) => self.machine.borrow_mut().p2_start_button(pressed),
+            Some(scancodes::DOWN) => self.machine.borrow_mut().p1_fire_button(pressed),
+            Some(scancodes::LEFT) => self.machine.borrow_mut().p1_left_button(pressed),
+            Some(scancodes::RIGHT) => self.machine.borrow_mut().p1_right_button(pressed),
+            Some(scancodes::SYMBOLIC_A) => self.machine.borrow_mut().p2_left_button(pressed),
+            Some(scancodes::SYMBOLIC_S) => self.machine.borrow_mut().p2_fire_button(pressed),
+            Some(scancodes::SYMBOLIC_D) => self.machine.borrow_mut().p2_right_button(pressed),
             _ => (),
         }
     }

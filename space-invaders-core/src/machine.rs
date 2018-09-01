@@ -51,6 +51,7 @@ pub struct SpaceInvaderMachine {
     shift_offset: u8,
 }
 
+const START_P2_OFFSET: u8 = 1;
 const START_P1_OFFSET: u8 = 2;
 const FIRE_BTN_OFFSET: u8 = 4;
 const LEFT_BTN_OFFSET: u8 = 5;
@@ -71,20 +72,36 @@ impl SpaceInvaderMachine {
         self.port_1 = (self.port_1 & !1) | pressed as u8;
     }
 
-    pub fn left_button(&mut self, pressed: bool) {
+    pub fn p1_start_button(&mut self, pressed:bool) {
+        self.port_1 = (self.port_1 & !(1 << START_P1_OFFSET)) | ((pressed as u8) << START_P1_OFFSET);
+    }
+
+    pub fn p2_start_button(&mut self, pressed:bool) {
+        self.port_1 = (self.port_1 & !(1 << START_P2_OFFSET)) | ((pressed as u8) << START_P2_OFFSET);
+    }
+
+    pub fn p1_left_button(&mut self, pressed: bool) {
         self.port_1 = (self.port_1 & !(1 << LEFT_BTN_OFFSET)) | ((pressed as u8) << LEFT_BTN_OFFSET);
     }
 
-    pub fn right_button(&mut self, pressed: bool) {
+    pub fn p1_right_button(&mut self, pressed: bool) {
         self.port_1 = (self.port_1 & !(1 << RIGHT_BTN_OFFSET)) | ((pressed as u8) << RIGHT_BTN_OFFSET);
     }
 
-    pub fn fire_button(&mut self, pressed: bool) {
+    pub fn p1_fire_button(&mut self, pressed: bool) {
         self.port_1 = (self.port_1 & !(1 << FIRE_BTN_OFFSET)) | ((pressed as u8) << FIRE_BTN_OFFSET);
     }
 
-    pub fn start_button(&mut self, pressed:bool) {
-        self.port_1 = (self.port_1 & !(1 << START_P1_OFFSET)) | ((pressed as u8) << START_P1_OFFSET);
+    pub fn p2_left_button(&mut self, pressed: bool) {
+        self.port_2 = (self.port_2 & !(1 << LEFT_BTN_OFFSET)) | ((pressed as u8) << LEFT_BTN_OFFSET);
+    }
+
+    pub fn p2_right_button(&mut self, pressed: bool) {
+        self.port_2 = (self.port_2 & !(1 << RIGHT_BTN_OFFSET)) | ((pressed as u8) << RIGHT_BTN_OFFSET);
+    }
+
+    pub fn p2_fire_button(&mut self, pressed: bool) {
+        self.port_2 = (self.port_2 & !(1 << FIRE_BTN_OFFSET)) | ((pressed as u8) << FIRE_BTN_OFFSET);
     }
 
     fn read_port(&self, port: u8) -> u8 {
