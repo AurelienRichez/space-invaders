@@ -1,5 +1,5 @@
 [package]
-name = "conrod-space-invaders"
+name = "piston-space-invaders"
 version = "0.1.0"
 authors = ["Aurélien Richez <aurelien.richez@gmail.com>"]
 

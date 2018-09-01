@@ -2,7 +2,7 @@
 
 members = [
     "intel-8080-emu",
-    "space-invaders",
-    "conrod-space-invaders",
+    "gtk-space-invaders",
+    "piston-space-invaders",
     "space-invaders-core"
 ]
