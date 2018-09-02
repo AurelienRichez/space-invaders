@@ -8,11 +8,7 @@ Building
 I assume the [rust toolchain](https://www.rust-lang.org) is installed.
 
  - Make sure that you have [gtk-rs requirements](http://gtk-rs.org/docs-src/requirements.html) 
-(`sudo apt install libgtk-3-dev` on a debian base distribution, `brew install gtk+3` on osx). 
- - **⚠⚠⚠ The real space invaders rom is not included in this repository ⚠⚠⚠** The provided rom runs
-  fine ans is useful to test that everything compiles, but it just draws random garbage on the 
-  screen. **You have to add the file `space-invaders-core/resources/invaders.rom`**. Otherwise, 
-  `dummy.rom` is used. 
+(`sudo apt install libgtk-3-dev` on a debian base distribution, `brew install gtk+3` on osx).
  - Other than that, it is classic `cargo build`, `cargo run` etc.
 
 Known issues

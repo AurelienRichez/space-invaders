@@ -12,7 +12,7 @@ use gtk::prelude::*;
 use gtk::{DrawingArea, Window, WindowType};
 use cairo::ImageSurface;
 use intel_8080_emu::proc_state::Proc8080;
-use space_invaders_core::{ SpaceInvaderDataBus, SpaceInvaderMachine };
+use space_invaders_core::{ SpaceInvaderDataBus, SpaceInvaderMachine, INVADERS_ROM };
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::{ Instant, Duration };
@@ -28,13 +28,11 @@ const PIXEL_HEIGHT: i32 = 256;
 
 fn run_space_invader() {
 
-    let invader_rom = include_bytes!(env!("ROM_PATH"));
-
     let machine = Rc::new(RefCell::new(SpaceInvaderMachine::new()));
     let data_bus = SpaceInvaderDataBus::new(machine.clone());
 
     let mut memory = Box::new([0x00; 0xffff]);
-    memory[0..invader_rom.len()].copy_from_slice(invader_rom);
+    memory[0..INVADERS_ROM.len()].copy_from_slice(INVADERS_ROM);
 
     let proc8080 = Rc::new(RefCell::new(Proc8080::new(
             memory, 
