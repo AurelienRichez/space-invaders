@@ -15,6 +15,7 @@ extern crate space_invaders_core;
 mod app;
 
 use piston::window::WindowSettings;
+use piston_window::AdvancedWindow;
 use piston::event_loop::*;
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{ OpenGL };
@@ -31,15 +32,17 @@ fn main() {
 
     // Create an Glutin window.
     let mut window: Window = WindowSettings::new(
-            "spinning-square",
+            "space-invaders",
             [PIXEL_WIDTH*2, PIXEL_HEIGHT*2]
         )
         .opengl(opengl)
         .samples(0)
+        .fullscreen(true)
         .resizable(false)
         .exit_on_esc(true)
         .build()
         .unwrap();
+    window.set_capture_cursor(true);
 
     // Create a new game and run it.
     let mut app = App::new(opengl);

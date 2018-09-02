@@ -82,10 +82,14 @@ impl App {
 
         let screen = &self.screen;
         self.gl.draw(args.viewport(), |c, gl| {
-            let transform = c.transform.scale(
-                args.draw_width as f64 / PIXEL_WIDTH as f64, 
-                args.draw_height as f64 / PIXEL_HEIGHT as f64
-            );
+
+            let scale_width = args.draw_width as f64 / PIXEL_WIDTH as f64;
+            let scale_height = args.draw_height as f64 / PIXEL_HEIGHT as f64;
+            let actual_scale = scale_width.min(scale_height);
+            let actual_width = PIXEL_WIDTH as f64 * actual_scale;
+            let transform = c.transform
+                .trans((args.draw_width as f64 - actual_width) / 2.0, 0.0)
+                .scale(actual_scale, actual_scale);
             image(screen, transform, gl);
         });
     }
