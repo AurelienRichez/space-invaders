@@ -6,14 +6,13 @@ extern crate gtk;
 extern crate gdk;
 extern crate cairo;
 extern crate intel_8080_emu;
-
-mod machine;
+extern crate space_invaders_core;
 
 use gtk::prelude::*;
 use gtk::{DrawingArea, Window, WindowType};
 use cairo::ImageSurface;
 use intel_8080_emu::proc_state::Proc8080;
-use machine::{ SpaceInvaderDataBus, SpaceInvaderMachine };
+use space_invaders_core::{ SpaceInvaderDataBus, SpaceInvaderMachine };
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::{ Instant, Duration };
@@ -81,10 +80,10 @@ fn run_space_invader() {
 fn handle_key(machine: &Rc<RefCell<SpaceInvaderMachine>>, event: gdk::EventKey, pressed: bool) {
     match event.get_keyval() {
         key::Return => machine.borrow_mut().insert_coin(pressed),
-        key::s => machine.borrow_mut().start_button(pressed),
-        key::space => machine.borrow_mut().fire_button(pressed),
-        key::Left => machine.borrow_mut().left_button(pressed),
-        key::Right => machine.borrow_mut().right_button(pressed),
+        key::s => machine.borrow_mut().p1_start_button(pressed),
+        key::space => machine.borrow_mut().p1_fire_button(pressed),
+        key::Left => machine.borrow_mut().p1_left_button(pressed),
+        key::Right => machine.borrow_mut().p1_right_button(pressed),
         _ => (),
     }
 }
