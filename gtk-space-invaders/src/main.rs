@@ -34,11 +34,7 @@ fn run_space_invader() {
     let mut memory = Box::new([0x00; 0xffff]);
     memory[0..INVADERS_ROM.len()].copy_from_slice(INVADERS_ROM);
 
-    let proc8080 = Rc::new(RefCell::new(Proc8080::new(
-            memory, 
-            Box::new(|| { panic!("halted")}), 
-            data_bus,
-        )));
+    let proc8080 = Rc::new(RefCell::new(Proc8080::new(memory, data_bus)));
 
     gtk::init().unwrap();
 

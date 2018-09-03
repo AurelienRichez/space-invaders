@@ -5,9 +5,23 @@
 extern crate intel_8080_emu;
 
 use std::fs;
-use intel_8080_emu::proc_state::{ Proc8080, InterceptableProc8080, DummyBus };
+use intel_8080_emu::proc_state::{ Proc8080, InterceptableProc8080, DataBus };
 use intel_8080_emu::opcode::{ OpCode, Reg16 };
 use std::cell::Cell;
+
+struct DummyBus {}
+
+impl DataBus for DummyBus {
+
+    fn read_port(&self, _port: u8) -> u8 {
+        0
+    }
+
+    fn write_port(&mut self, _port: u8, _value: u8) {
+
+    }
+
+}
 
 #[test]
 fn cpudiag() {
@@ -20,7 +34,7 @@ fn cpudiag() {
     memory[1] = 0;
     memory[2] = 0x01;
 
-    let proc8080: Proc8080<DummyBus> = Proc8080::<DummyBus>::with_mem(memory);
+    let proc8080: Proc8080<DummyBus> = Proc8080::new(memory, DummyBus {});
 
     let done = Cell::new(false);
 

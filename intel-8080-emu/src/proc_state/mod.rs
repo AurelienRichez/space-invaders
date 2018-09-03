@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+
 mod flags;
 mod registers;
 
@@ -21,36 +22,28 @@ pub trait DataBus {
     
 }
 
-/// A data bus that does nothing
-pub struct DummyBus {}
-
-impl DataBus for DummyBus {
-
-    fn read_port(&self, _port: u8) -> u8 {
-        0
-    }
-
-    fn write_port(&mut self, _port: u8, _value: u8) {
-
-    }
-
-}
-
+/// Structure containing the processor state (flags, registers and memory) and logic.
 pub struct Proc8080<Bus: DataBus> {
     flags: Flags,
     registers: Registers,
     memory: Box<[u8]>,
     cycles: u64,
     interupt_enabled: bool,
-    on_halt: Box<Fn() -> ()>,
+    stopped: bool,
     data_bus: Bus
 }
 
 impl<Bus: DataBus> Proc8080<Bus> {
 
+    /// Builds a new `Proc8080` with the given memory `mem` and `DataBus`.
+    /// 
+    /// The memory contains both the ROM and RAM of the processor. Usually it is called with a
+    /// boxed array of size 0xffff (adressable space for the intel 8080) which contains the ROM at
+    /// the beginning of the memory. The processor starts with the program counter equal to 0.
+    /// 
+    /// The `data_bus` contains callbacks called when running a `IN` or `OUT` opcode.
     pub fn new(
             mem: Box<[u8]>, 
-            on_halt: Box<Fn() -> ()>,
             data_bus: Bus
          ) -> Proc8080<Bus> {
         Proc8080 {
@@ -59,40 +52,54 @@ impl<Bus: DataBus> Proc8080<Bus> {
             memory: mem,
             cycles: 0,
             interupt_enabled: false,
-            on_halt,
-            data_bus
+            stopped: false,
+            data_bus,
         }
     }
 
-    pub fn with_mem(mem: Box<[u8]>) -> Proc8080<DummyBus> {
-        Proc8080::new(
-            mem, 
-            Box::new(|| {}),
-            DummyBus {},
-        )
-    }
-
+    /// Borrows the procesor flags immutably.
     pub fn flags(&self) -> &Flags {
         &self.flags
     }
 
+    /// Borrows the procesor registers immutably.
     pub fn registers(&self) -> &Registers {
         &self.registers
     }
 
+    /// Reads the next opcode in memory and changes state accordingly.
+    /// 
+    /// This methods run one `step` of the processor simulation. It reads the next opcode according
+    /// to the program counter
     pub fn emulate(&mut self) -> Result<(), &'static str> {
-        opcode::read_opcode(&self.memory[(self.registers.pc as usize)..])
-            .map(|op| { 
-                self.registers.pc = self.registers.pc.wrapping_add(op.size());
-                self.apply_op(op);
-            })
+        if !self.stopped {
+            opcode::read_opcode(&self.memory[(self.registers.pc as usize)..])
+                .map(|op| { 
+                    self.registers.pc = self.registers.pc.wrapping_add(op.size());
+                    self.apply_op(op);
+                })
+        } else {
+            Ok(())
+        }
     }
 
+    /// Borrows the memory immutably.
     pub fn memory(&self) -> &[u8] {
         &self.memory
     }
 
+    /// Make the processor run a `RST` instruction.
+    /// 
+    /// There are 8 possible `RST` instruction for the 8080 (`RST 0` to `7`). The specific 
+    /// instruction is chosen via `rst_value`.
+    /// 
+    /// An interrupt restart a processor which was in stopped state after running a HLT opcode.
+    /// 
+    /// # Panics 
+    /// If `rst_value` is greater than 7;
     pub fn interrupt(&mut self, rst_value: u8) {
+        assert!(rst_value <= 7, "RST value are only from 0 to 7");
+        self.stopped = false;
         if self.interupt_enabled { 
             self.interupt_enabled = false;
             self.apply_op(Rst(rst_value));
@@ -213,7 +220,7 @@ impl<Bus: DataBus> Proc8080<Bus> {
             Out(port) => self.data_bus.write_port(port, self.registers.reg_val(Register::A)),
             Ei => self.interupt_enabled = true,
             Di => self.interupt_enabled = false,
-            Hlt => (self.on_halt)(),
+            Hlt => self.stopped = false,
         }
         self.cycles += op.cycles();
     }
@@ -632,6 +639,14 @@ mod tests {
     use::proc_state::*;
     use opcode::Register::*;
 
+    pub struct DummyBus {}
+
+    impl DataBus for DummyBus {
+        fn read_port(&self, _port: u8) -> u8 { 0 }
+
+        fn write_port(&mut self, _port: u8, _value: u8) {}
+    }
+
     struct ProcFixture {
         proc8080: Proc8080<DummyBus>
     }
@@ -640,11 +655,7 @@ mod tests {
         
         pub fn new() -> ProcFixture {
             ProcFixture {
-                proc8080: Proc8080::new(
-                    Box::new([0x00; 0xffff]),
-                    Box::new(|| panic!("HALTED")),
-                    DummyBus {},
-                )
+                proc8080: Proc8080::new(Box::new([0x00; 0xffff]), DummyBus {}),
             }
         }
 
