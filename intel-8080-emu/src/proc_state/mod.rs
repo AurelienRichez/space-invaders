@@ -13,11 +13,22 @@ use opcode::OpCode::*;
 pub use self::flags::Flags;
 pub use self::registers::Registers;
 
-
+/// Interface used by `Proc8080` for `IN` and `OUT` instructions. This is the main way to interact 
+/// with the processor emulation.
+/// 
+/// The 8008 processor communicates with external devices via the instructions `IN` (the CPU reads 
+/// from the databus on a given port) and `OUT` (the CPU writes to a given port). Reading and 
+/// writing to the bus can do anything depending on the hardware (playing a sound, asking
+/// specialized hardware to perform a computation, reading user keypresses...). 
+/// 
+/// This trait reify the  interactions with this data bus and is intended to be implemented by the 
+/// user of the library in order to integrate with the emulator.
 pub trait DataBus {
 
+    /// Called by `Proc8080` when it applies a `IN` instruction
     fn read_port(&self, port: u8) -> u8;
 
+    /// Called by `Proc8080` when it applies a `OUT` instruction
     fn write_port(&mut self, port: u8, value: u8);
     
 }
@@ -587,8 +598,10 @@ impl<Bus: DataBus> fmt::Debug for Proc8080<Bus> {
     }
 }
 
-/// Allows to intercept opcodes with a closure. 
-/// The closure should return true if the emulator should skip the instruction.
+/// A simple wrapper around [`Proc8080`](struct.Proc8080.html) which allows to intercept opcodes.
+/// 
+/// This structure is useful for debugging, fixing some missing components like a call to code which
+/// does not exist in the rom etc. It has the same interface as `Proc8080`.
 pub struct InterceptableProc8080<Bus: DataBus, Intercept: Fn(&Proc8080<Bus>, &OpCode) -> bool> {
     proc8080: Proc8080<Bus>,
     interceptor: Intercept,
@@ -598,8 +611,21 @@ impl<Bus, Intercept> InterceptableProc8080<Bus, Intercept>
     where Bus: DataBus, 
         Intercept: Fn(&Proc8080<Bus>, &OpCode) -> bool {
 
+    /// Builds an `InterceptableProc8080` by taking ownership of an exiting `Proc8080`
+    /// 
+    /// `interceptor` is a closure which allows to run arbitrary code before the actual emulator
+    /// apply an opcode, and after the program counter is increased (i.e. `proc.registers().pc` will 
+    /// point to the next instruction after the current one). The interceptor can then do wathever 
+    /// it  needs to and must then returns : 
+    ///  - `true` if the processor should go on and apply the opcode normally
+    ///  - `false` if it should ignore it and skip to the next instruction
     pub fn from_8080(proc8080: Proc8080<Bus>, interceptor: Intercept) -> InterceptableProc8080<Bus, Intercept> {
         InterceptableProc8080 { proc8080, interceptor }
+    }
+
+    /// Takes ownership of the wrapped `Proc8080`. 
+    pub fn unwrap(self) -> Proc8080<Bus> {
+        self.proc8080
     }
 
     pub fn emulate(&mut self) -> Result<(), &'static str> {
