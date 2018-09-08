@@ -10,7 +10,7 @@ repository = "https://github.com/AurelienRichez/8080-emulator/tree/master/intel-
 
 readme = "README.md"
 
-keywords = ["emulator", "intel 8080"]
+keywords = ["emulator", "intel-8080"]
 
 categories = ["emulators"]
 
