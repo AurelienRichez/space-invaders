@@ -106,7 +106,7 @@ impl App {
         let cycles = now.duration_since(self.last_cpu_run).subsec_nanos() as u64 / 500 ;
         let current_cycles = self.cpu.borrow().cycles();
         while self.cpu.borrow().cycles() < (current_cycles + cycles) {
-            self.cpu.borrow_mut().emulate().unwrap();
+            self.cpu.borrow_mut().emulate();
         }
 
         self.last_cpu_run = now;

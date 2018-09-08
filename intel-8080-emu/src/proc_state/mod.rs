@@ -82,15 +82,14 @@ impl<Bus: DataBus> Proc8080<Bus> {
     /// 
     /// This methods run one `step` of the processor simulation. It reads the next opcode according
     /// to the program counter
-    pub fn emulate(&mut self) -> Result<(), &'static str> {
+    pub fn emulate(&mut self) {
         if !self.stopped {
-            opcode::read_opcode(&self.memory[(self.registers.pc as usize)..])
-                .map(|op| { 
-                    self.registers.pc = self.registers.pc.wrapping_add(op.size());
-                    self.apply_op(op);
-                })
-        } else {
-            Ok(())
+            let opcode = opcode::read_opcode(&self.memory[(self.registers.pc as usize)..])
+                .unwrap_or_else(|_| { 
+                    opcode::read_opcode_safe(&self.get_next_3_bytes())
+                });
+            self.registers.pc = self.registers.pc.wrapping_add(opcode.size());
+            self.apply_op(opcode);
         }
     }
 
@@ -120,6 +119,15 @@ impl<Bus: DataBus> Proc8080<Bus> {
     /// Cycles elapsed since the cpu was created
     pub fn cycles(&self) -> u64 {
         self.cycles
+    }
+
+    fn get_next_3_bytes(&mut self) -> [u8;3] {
+        let mut bytes = [0;3];
+        for i in 0..3 {
+            bytes[i] = self.memory[self.registers.pc as usize];
+            self.registers.pc += self.registers.pc.wrapping_add(1);
+        }
+        bytes
     }
     
     fn apply_op(&mut self, op: OpCode) {
@@ -628,7 +636,7 @@ impl<Bus, Intercept> InterceptableProc8080<Bus, Intercept>
         self.proc8080
     }
 
-    pub fn emulate(&mut self) -> Result<(), &'static str> {
+    pub fn emulate(&mut self) -> Result<(), opcode::UnexpectedEndOfInput> {
         opcode::read_opcode(&self.proc8080.memory[(self.proc8080.registers.pc as usize)..])
             .map(|op| { 
                 self.proc8080.registers.pc = self.proc8080.registers.pc.wrapping_add(op.size());

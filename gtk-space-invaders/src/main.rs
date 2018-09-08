@@ -152,7 +152,7 @@ fn set_proc_timeout(proc8080: Rc<RefCell<Proc8080<SpaceInvaderDataBus>>>, drawin
         let cycles = now.duration_since(last_run).subsec_nanos() as u64 / 500 ;
         let current_cycles = proc8080.borrow().cycles();
         while proc8080.borrow().cycles() < (current_cycles + cycles) {
-            proc8080.borrow_mut().emulate().unwrap();
+            proc8080.borrow_mut().emulate();
         }
 
         last_run = now;

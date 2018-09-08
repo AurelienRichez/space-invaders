@@ -8,12 +8,23 @@ pub use self::opcodes::Register;
 pub use self::opcodes::Reg16;
 
 use std::io::BufRead;
+use std::fmt;
+use std::error::Error;
 use std;
 
 use self::opcodes::OpCode::*;
 use self::opcodes::Register::*;
 
-pub fn read_opcode(bytes: &[u8]) -> Result<OpCode, &'static str> {
+/// A parser which takes a slice of 3 bytes and cannot fail.
+pub fn read_opcode_safe(bytes: &[u8;3]) -> OpCode {
+    read_opcode(bytes).unwrap()
+}
+
+/// Read a slice of bytes and returns an opcode, possibly with its data.
+/// 
+/// Unknown opcodes are interpreted as NOP. The parsing might fail if the slice is too short.
+/// 
+pub fn read_opcode(bytes: &[u8]) -> Result<OpCode, UnexpectedEndOfInput> {
     bytes.get(0).map(|b| match b {
         0x01 => expect_data_u16(bytes).map(|v| Lxi(Reg16::B, v)),
         0x02 => Ok(StaxB),
@@ -271,21 +282,21 @@ pub fn read_opcode(bytes: &[u8]) -> Result<OpCode, &'static str> {
         0xfe => expect_data_byte(bytes).map(Cpi),
         0xff => Ok(Rst(7)),
         _ => Ok(Nop),
-    }).unwrap_or(Err("unexpected end of input"))
+    }).unwrap_or(Err(UnexpectedEndOfInput))
 }
 
-fn expect_data_u16(bytes: &[u8]) -> Result<u16, &'static str> {
+fn expect_data_u16(bytes: &[u8]) -> Result<u16, UnexpectedEndOfInput> {
     expect_2_data_bytes(bytes).map(|(a,b)| ((b as u16) << 8) | a as u16)
 }
 
-fn expect_2_data_bytes(bytes: &[u8]) -> Result<(u8, u8), &'static str> {
+fn expect_2_data_bytes(bytes: &[u8]) -> Result<(u8, u8), UnexpectedEndOfInput> {
     bytes.get(1)
         .and_then(|a| bytes.get(2).map(|b| (*a, *b)))
-        .ok_or("unexpected end of input")
+        .ok_or(UnexpectedEndOfInput)
 }
 
-fn expect_data_byte(bytes: &[u8]) -> Result<u8, &'static str> {
-    bytes.get(1).map(|a| *a).ok_or("unexpected end of input")
+fn expect_data_byte(bytes: &[u8]) -> Result<u8, UnexpectedEndOfInput> {
+    bytes.get(1).map(|a| *a).ok_or(UnexpectedEndOfInput)
 }
 
 pub struct OpCodes<U: BufRead> {
@@ -300,13 +311,13 @@ impl<U: BufRead> OpCodes<U> {
 }
 
 impl<U: BufRead> std::iter::Iterator for OpCodes<U> where U: std::io::Read{
-    type Item = Result<OpCode, &'static str>;
+    type Item = Result<OpCode, UnexpectedEndOfInput>;
 
-    fn next(&mut self) -> Option<Result<OpCode,&'static str>> {
+    fn next(&mut self) -> Option<Result<OpCode, UnexpectedEndOfInput>> {
         let opcode_opt = match self.reader.fill_buf() {
             Ok([]) => None,
             Ok(buf) => Some(read_opcode(buf)),
-            Err(_) => Some(Err("Error reading buffer")),
+            Err(_) => Some(Err(UnexpectedEndOfInput)),
         };
         
         match opcode_opt {
@@ -315,6 +326,25 @@ impl<U: BufRead> std::iter::Iterator for OpCodes<U> where U: std::io::Read{
             _ => {}
         }
         opcode_opt
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct UnexpectedEndOfInput;
+
+impl fmt::Display for UnexpectedEndOfInput {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,"{}", self.description())
+    }
+}
+
+impl Error for UnexpectedEndOfInput {
+    fn description(&self) -> &str {
+        "unexpected end of input"
+    }
+
+    fn cause(&self) -> Option<&Error> {
+        None
     }
 }
 
