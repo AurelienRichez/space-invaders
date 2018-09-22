@@ -15,7 +15,7 @@ use piston_window::texture::TextureSettings;
 use space_invaders_core::{ SpaceInvaderDataBus, SpaceInvaderMachine, INVADERS_ROM };
 use intel_8080_emu::proc_state::Proc8080;
 
-use super::{PIXEL_WIDTH, PIXEL_HEIGHT};
+use super::{ PIXEL_WIDTH, PIXEL_HEIGHT };
 
 pub struct App {
     gl: GlGraphics,
@@ -26,22 +26,6 @@ pub struct App {
     last_half_interrupt: Instant,
     last_cpu_run: Instant,
 }
-
-// scancodes, not sure it is os dependent but i did not find a way to access the original enum from
-// the SDL in there.
-mod scancodes {
-    pub const LEFT: i32 = 105;
-    pub const DOWN: i32 = 108;
-    pub const RIGHT: i32 = 106;
-    pub const CTRL_R: i32 = 97;
-    pub const SYMBOLIC_A: i32 = 30;
-    pub const SYMBOLIC_S: i32 = 31;
-    pub const SYMBOLIC_D: i32 = 32;
-    pub const ENTER: i32 = 28;
-    pub const INSERT: i32 = 110;
-}
-
-
 
 impl App {
 
@@ -115,17 +99,25 @@ impl App {
     }
 
     pub fn handle_input(&mut self, args: ButtonArgs) {
+        use piston::input::Button::Keyboard;
+
         let pressed = args.state == ButtonState::Press;
-        match args.scancode {
-            Some(scancodes::INSERT) => self.machine.borrow_mut().insert_coin(pressed),
-            Some(scancodes::ENTER) => self.machine.borrow_mut().p1_start_button(pressed),
-            Some(scancodes::CTRL_R) => self.machine.borrow_mut().p2_start_button(pressed),
-            Some(scancodes::DOWN) => self.machine.borrow_mut().p1_fire_button(pressed),
-            Some(scancodes::LEFT) => self.machine.borrow_mut().p1_left_button(pressed),
-            Some(scancodes::RIGHT) => self.machine.borrow_mut().p1_right_button(pressed),
-            Some(scancodes::SYMBOLIC_A) => self.machine.borrow_mut().p2_left_button(pressed),
-            Some(scancodes::SYMBOLIC_S) => self.machine.borrow_mut().p2_fire_button(pressed),
-            Some(scancodes::SYMBOLIC_D) => self.machine.borrow_mut().p2_right_button(pressed),
+        match args.button {
+            Keyboard(Key::Return) => self.machine.borrow_mut().insert_coin(pressed),
+            Keyboard(Key::LCtrl) => self.machine.borrow_mut().p1_start_button(pressed),
+            Keyboard(Key::RCtrl) => self.machine.borrow_mut().p2_start_button(pressed),
+            Keyboard(Key::Space) => {
+                self.machine.borrow_mut().p1_fire_button(pressed);
+                self.machine.borrow_mut().p2_fire_button(pressed);
+            },
+            Keyboard(Key::Left) => {
+                self.machine.borrow_mut().p1_left_button(pressed);
+                self.machine.borrow_mut().p2_left_button(pressed);
+            },
+            Keyboard(Key::Right) => {
+                self.machine.borrow_mut().p1_right_button(pressed);
+                self.machine.borrow_mut().p2_right_button(pressed);
+            },
             _ => (),
         }
     }
