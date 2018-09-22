@@ -1,5 +1,6 @@
 Intel 8080 emu
 --------
+[![Crates.io](https://img.shields.io/crates/v/intel-8080-emu.svg?style=flat-square)](https://crates.io/crates/intel-8080-emu)
 
 An intel 8080 emulator library (another one). Initially implemeted to build a space invaders 
 emulator (another another one).
