@@ -1,0 +1,24 @@
+[package]
+name = "wasm-space-invaders"
+version = "0.1.0"
+authors = ["Aurélien Richez <aurelien.richez@gmail.com>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+cfg-if = "0.1.2"
+wasm-bindgen = "0.2"
+intel-8080-emu = { path = "../intel-8080-emu"}
+space-invaders-core = { path = "../space-invaders-core"}
+console_error_panic_hook = { version = "0.1.1", optional = true }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.2"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"

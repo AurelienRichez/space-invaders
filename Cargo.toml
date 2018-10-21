@@ -4,5 +4,6 @@ members = [
     "intel-8080-emu",
     "gtk-space-invaders",
     "piston-space-invaders",
-    "space-invaders-core"
+    "space-invaders-core",
+    "wasm-space-invaders"
 ]
