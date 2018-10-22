@@ -114,6 +114,36 @@ impl App {
     
     ctx.put_image_data(&image_data, 0.0, 0.0)
   }
+
+  pub fn handle_key_down(&self, keycode: &str) {
+    self.handle_key(keycode, true)
+  } 
+
+  pub fn handle_key_up(&self, keycode: &str) {
+    self.handle_key(keycode, false)
+  } 
+
+  fn handle_key(&self, keycode: &str, down: bool) {
+    match keycode {
+            "Enter" => self.machine.borrow_mut().insert_coin(down),
+            "ControlLeft" => self.machine.borrow_mut().p1_start_button(down),
+            "ControlRight" => self.machine.borrow_mut().p2_start_button(down),
+            "Space" => {
+                self.machine.borrow_mut().p1_fire_button(down);
+                self.machine.borrow_mut().p2_fire_button(down);
+            },
+            "ArrowLeft" => {
+                self.machine.borrow_mut().p1_left_button(down);
+                self.machine.borrow_mut().p2_left_button(down);
+            },
+            "ArrowRight" => {
+                self.machine.borrow_mut().p1_right_button(down);
+                self.machine.borrow_mut().p2_right_button(down);
+            },
+            _ => (),
+    }
+  }
+
 }
 
 fn memory_buffer_index_to_coordinates(index: usize) -> (u32, u32) {

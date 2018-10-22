@@ -1,4 +1,5 @@
 import { App } from 'wasm-space-invaders'
+import { cpus } from 'os';
 
 const app = App.new()
 const canvas = document.getElementById("space-invaders-canvas")
@@ -17,5 +18,17 @@ const tick = () => {
   lastRun = currentTime
 }
 
+const handleKeyDown = (e) => {
+  if(!e.repeat) {
+    app.handle_key_down(e.code)
+  }
+}
+
+const handleKeyUp = (e) => {
+  app.handle_key_up(e.code)
+}
+
 requestAnimationFrame(renderLoop)
-setInterval(tick, 8)
+setInterval(tick, 1)
+document.addEventListener('keydown', handleKeyDown)
+document.addEventListener('keyup', handleKeyUp)
