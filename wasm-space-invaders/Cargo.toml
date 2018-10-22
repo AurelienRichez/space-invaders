@@ -16,6 +16,10 @@ intel-8080-emu = { path = "../intel-8080-emu"}
 space-invaders-core = { path = "../space-invaders-core"}
 console_error_panic_hook = { version = "0.1.1", optional = true }
 
+[dependencies.web-sys]
+version = "0.3.2"
+features = ["CanvasRenderingContext2d", "ImageData"]
+
 [dev-dependencies]
 wasm-bindgen-test = "0.2"
 
