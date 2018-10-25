@@ -1,5 +1,4 @@
 import { App } from 'wasm-space-invaders'
-import { cpus } from 'os';
 
 const app = App.new()
 const canvas = document.getElementById("space-invaders-canvas")
