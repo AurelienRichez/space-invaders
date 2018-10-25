@@ -12,7 +12,7 @@ default = ["console_error_panic_hook"]
 [dependencies]
 cfg-if = "0.1.2"
 wasm-bindgen = "0.2"
-intel-8080-emu = { path = "../intel-8080-emu"}
+intel-8080-emu = "0.1"
 space-invaders-core = { path = "../space-invaders-core"}
 console_error_panic_hook = { version = "0.1.1", optional = true }
 
