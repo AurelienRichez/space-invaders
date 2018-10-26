@@ -1,3 +1,4 @@
 target/
 *.swp
 invaders.rom
+*.log
