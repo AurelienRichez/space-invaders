@@ -23,6 +23,7 @@ use intel_8080_emu::proc_state::Proc8080;
 use space_invaders_core::{SpaceInvaderDataBus, SpaceInvaderMachine, INVADERS_ROM};
 
 #[wasm_bindgen]
+#[no_mangle]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
     fn log(a: &str);
@@ -33,6 +34,7 @@ macro_rules! console_log {
 }
 
 #[wasm_bindgen]
+#[no_mangle]
 pub struct App {
   cpu: Proc8080<SpaceInvaderDataBus>,
   machine: Rc<RefCell<SpaceInvaderMachine>>,
