@@ -14,17 +14,11 @@ There are 4 crates :
  - [piston-space-invaders](./piston-space-invaders) : a space invaders implementation using 
  [piston libraries](https://www.piston.rs/)
  - [wasm-space-invaders](./wasm-space-invaders) : a space invaders implementaion using the 
- webassembly target of rust and a simple canvas in js.
+ webassembly target of rust and a simple canvas in js ([try it!](https://aurelienrichez.github.io/space-invaders/)). 
 
 
 Requirements
 ------------
-
-**⚠⚠⚠ The real space invaders rom is not included in this repository ⚠⚠⚠** The provided rom 
-`space-invaders-core/resources/dummy.rom` runs fine and is useful to test that everything compiles, 
-but it just draws random garbage on the screen. 
-**You have to add the file `space-invaders-core/resources/invaders.rom`** which can be 
-easily found on the internet. The compiler automatically embed `invaders.rom` if it exists.
 
 `gtk-space-invaders` needs the [gtk-rs requirements](http://gtk-rs.org/docs-src/requirements.html) 
 (`sudo apt install libgtk-3-dev` on a debian base distribution, `brew install gtk+3` on osx)
