@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Space invaders ! </title>
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          background: black;
+          color: white;
+        }
+        .left-div {
+          flex: 1;
+        }
+
+
+        #space-invaders-canvas {
+          height: 100%;
+          max-width: 100%;
+          object-fit: contain;
+          image-rendering: -moz-crisp-edges;
+          image-rendering: -webkit-crisp-edges;
+          image-rendering: pixelated;
+          image-rendering: crisp-edges;
+          aspect-ratio: 224 / 256;
+          width: min(100%, 100vh * 224 / 256);
+        }
+
+        .instructions {
+          position: fixed;
+          right: 5px;
+          top: 5px;
+          text-align: right;
+          background-color: black;
+        }
+
+        .instructions label {
+          position: fixed;
+          right: 5px;
+          top: 5px;
+          cursor: pointer;
+          background-color: #505050;
+          height: 30px;
+          width: 30px;
+          line-height: 30px;
+          text-align: center;
+          border-radius: 15px;
+          font-weight: bold;
+          font-family: monospace;
+        }
+        .hide-input {
+          visibility: hidden;
+        }
+        .hide-input:checked + pre {
+          display: none;
+        }
+      </style>
+  </head>
+  <body>
+    <canvas id="space-invaders-canvas" width="224" height="256"></canvas>
+     <div class="instructions">
+      <label class="toggle" for="toggle">?</label>
+      <input type="checkbox"  id="toggle" class="hide-input" checked>
+      <pre>
+| key         | function                  |
+|-------------|---------------------------|
+| enter       | insert coin               |
+| ctrl left   | start game with 1 player  |
+| ctrl right  | start game with 2 player  |
+| space       | fire                      |
+| arrow right | go right                  |
+| arrow left  | go left                   |
+    </pre>
+    </div>
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
