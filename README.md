@@ -36,8 +36,8 @@ to force a recompilation if you compiled first with `dummy.rom`.
 
 References 
 -------
- - http://www.emulator101.com 
+ - [http://www.emulator101.com](https://web.archive.org/web/20180727123034/http://www.emulator101.com/)
  - http://computerarcheology.com/Arcade/SpaceInvaders
- - The *Intel 8080 Microcomputer Systems User's Manual*
- - *8080 Assembly Langage Programming Manual*
+ - The [*Intel 8080 Microcomputer Systems User's Manual*](https://archive.org/details/bitsavers_intelMCS80ocomputerSystemsUsersManual197509_43049640)
+ - [*8080 Assembly Langage Programming Manual*](https://archive.org/details/intel-8080-assembly-language-programming-manual-1975)
  
