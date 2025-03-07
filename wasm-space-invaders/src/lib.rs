@@ -34,7 +34,6 @@ macro_rules! console_log {
 }
 
 #[wasm_bindgen]
-#[no_mangle]
 pub struct App {
   cpu: Proc8080<SpaceInvaderDataBus>,
   machine: Rc<RefCell<SpaceInvaderMachine>>,
