@@ -13,7 +13,14 @@ init().then(() => {
   let lastRun = performance.now()
   const tick = () => {
     const currentTime = performance.now()
-    app.run(currentTime - lastRun)
+    let duration = currentTime - lastRun
+    while(duration > 0) {
+      // Run the simulation for only a bit less than half a frame
+      // Otherwise we might miss some interrupts
+      const simulationTime = duration % 7 || 7;
+      app.run(simulationTime)
+      duration -= simulationTime;
+    }
     lastRun = currentTime
   }
 
