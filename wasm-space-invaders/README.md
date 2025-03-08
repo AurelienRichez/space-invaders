@@ -14,6 +14,7 @@ python3 -m http.server # serve it on http
 the space invader game is served on localhost:8080. 
 
 Or you can also try it directly on [github pages](https://aurelienrichez.github.io/space-invaders/)
+
 Commands
 -------
  
